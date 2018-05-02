@@ -37,13 +37,17 @@ class App : Kooby({
 }) {
     companion object {
         fun createLapProfileService(conf: Config) : LdapProfileService {
+            val ldapUrl = conf.getString("ldap.url")
+            val ldapUsersDn = conf.getString("ldap.usersDn")
+            val ldapId = conf.getString("ldap.id")
+
             val dnResolver = FormatDnResolver()
-            dnResolver.format = "uid=%s,ou=people,dc=example,dc=org"
+            dnResolver.format = "$ldapId=%s,$ldapUsersDn"
 
             val connectionConfig = ConnectionConfig()
             connectionConfig.connectTimeout = Duration.ofMillis(500)
             connectionConfig.responseTimeout = Duration.ofMillis(1000)
-            connectionConfig.ldapUrl = "ldap://localhost:10389"
+            connectionConfig.ldapUrl = ldapUrl
 
             val connectionFactory = DefaultConnectionFactory()
             connectionFactory.connectionConfig = connectionConfig
@@ -80,8 +84,8 @@ class App : Kooby({
             val ldapProfileService = LdapProfileService()
             ldapProfileService.ldapAuthenticator = ldaptiveAuthenticator
             ldapProfileService.connectionFactory = connectionFactory
-            ldapProfileService.usersDn = "ou=people,dc=example,dc=org"
-            ldapProfileService.idAttribute = "uid"
+            ldapProfileService.usersDn = ldapUsersDn
+            ldapProfileService.idAttribute = ldapId
             ldapProfileService.attributes = "cn,sn"
 
             return ldapProfileService
