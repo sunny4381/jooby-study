@@ -20,8 +20,14 @@ import org.pac4j.core.profile.CommonProfile
 class App : Kooby({
     use(Hbs("/", ".hbs"))
 
-    // for Development purpose, in the near future custom login form must be provided.
-    get("/login", Pac4jLoginForm("/callback"))
+    get("/login") {
+        val view = Results.html("login")
+        val error = param("error")
+        if (error.isSet) {
+            view.put("error", error.value())
+        }
+        view
+    }
 
     use(Pac4j().client({ conf -> FormClient("/login", createLapProfileService(conf)) }))
 
