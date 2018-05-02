@@ -56,6 +56,8 @@ dependencies {
     compile "org.jooby:jooby-lang-kotlin"
     compile "org.jooby:jooby-netty"
     compile "org.jooby:jooby-hbs"
+    compile "org.jooby:jooby-pac4j2"
+    compile "org.pac4j:pac4j-ldap:2.2.1"
     compile "io.netty:netty-tcnative-boringssl-static:${dependencyManagement.importedProperties['boringssl.version']}:${osdetector.classifier}"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testCompile "org.jetbrains.spek:spek-api:$spekVersion"
