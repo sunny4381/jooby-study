@@ -1,0 +1,76 @@
+buildscript {
+    ext{
+        kotlin_version = '1.2.41'
+        junitPlatformVersion = "1.0.0"
+        spekVersion = "1.1.5"
+        joobyVersion = "1.3.0"
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.google.gradle:osdetector-gradle-plugin:1.4.0"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.4.RELEASE"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jooby:jooby-gradle-plugin:$joobyVersion"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:$junitPlatformVersion"
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+group 'io.github.sunny4381'
+version '1.0-SNAPSHOT'
+
+apply plugin: "io.spring.dependency-management"
+apply plugin: "com.google.osdetector"
+apply plugin: 'kotlin'
+apply plugin: "application"
+apply plugin: "jooby"
+apply plugin: "org.junit.platform.gradle.plugin"
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "4.4"
+    distributionType = org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.jooby:jooby-bom:$joobyVersion"
+    }
+}
+
+dependencies {
+    compile "org.jooby:jooby-lang-kotlin"
+    compile "org.jooby:jooby-netty"
+    compile "io.netty:netty-tcnative-boringssl-static:${dependencyManagement.importedProperties['boringssl.version']}:${osdetector.classifier}"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    testCompile "org.jetbrains.spek:spek-api:$spekVersion"
+    testRuntime "org.jetbrains.spek:spek-junit-platform-engine:$spekVersion"
+    testCompile "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
+    testCompile "org.amshove.kluent:kluent:1.35"
+    testCompile "io.rest-assured:rest-assured:3.0.7"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+/** We diverge from the default resources structure to adopt the Jooby standard: */
+sourceSets.main.resources {
+    srcDirs = ["conf", "public"]
+}
