@@ -10,6 +10,7 @@ buildscript {
         jcenter()
         mavenCentral()
     }
+
     dependencies {
         classpath "com.google.gradle:osdetector-gradle-plugin:1.4.0"
         classpath "io.spring.gradle:dependency-management-plugin:1.0.4.RELEASE"
@@ -54,6 +55,7 @@ dependencyManagement {
 dependencies {
     compile "org.jooby:jooby-lang-kotlin"
     compile "org.jooby:jooby-netty"
+    compile "org.jooby:jooby-hbs"
     compile "io.netty:netty-tcnative-boringssl-static:${dependencyManagement.importedProperties['boringssl.version']}:${osdetector.classifier}"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testCompile "org.jetbrains.spek:spek-api:$spekVersion"

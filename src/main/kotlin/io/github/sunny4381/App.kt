@@ -1,10 +1,13 @@
 package io.github.sunny4381
 
 import org.jooby.Kooby
+import org.jooby.Results
+import org.jooby.hbs.Hbs
 
 class App : Kooby({
-    get {
-        val name = param("name").value("Kotlin")
-        "Hello $name!"
+    use(Hbs("/", ".hbs"))
+
+    get("/") {
+        Results.html("index").put("model", "world")
     }
 })
