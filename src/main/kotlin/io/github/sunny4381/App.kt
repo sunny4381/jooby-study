@@ -4,7 +4,6 @@ import com.typesafe.config.Config
 import org.jooby.Kooby
 import org.jooby.Results
 import org.jooby.hbs.Hbs
-import org.jooby.internal.pac4j2.Pac4jLoginForm
 import org.jooby.pac4j.Pac4j
 import org.ldaptive.ConnectionConfig
 import org.ldaptive.DefaultConnectionFactory
@@ -33,7 +32,7 @@ class App : Kooby({
 
     get("/") {
         val profile = require(CommonProfile::class.java)
-        Results.html("index").put("model", profile.attributes["cn"])
+        Results.html("index").put("model", profile.attributes["cn"] ?: profile.id)
     }
 }) {
     companion object {
@@ -50,33 +49,33 @@ class App : Kooby({
             connectionFactory.connectionConfig = connectionConfig
 
             val poolConfig = PoolConfig()
-            poolConfig.setMinPoolSize(1)
-            poolConfig.setMaxPoolSize(2)
-            poolConfig.setValidateOnCheckOut(true)
-            poolConfig.setValidateOnCheckIn(true)
-            poolConfig.setValidatePeriodically(false)
+            poolConfig.minPoolSize = 1
+            poolConfig.maxPoolSize = 2
+            poolConfig.isValidateOnCheckOut = true
+            poolConfig.isValidateOnCheckIn = true
+            poolConfig.isValidatePeriodically = false
 
             val searchValidator = SearchValidator()
 
             val pruneStrategy = IdlePruneStrategy()
 
             val connectionPool = BlockingConnectionPool()
-            connectionPool.setPoolConfig(poolConfig)
-            connectionPool.setBlockWaitTime(Duration.ofMillis(1000))
-            connectionPool.setValidator(searchValidator)
-            connectionPool.setPruneStrategy(pruneStrategy)
-            connectionPool.setConnectionFactory(connectionFactory)
+            connectionPool.poolConfig = poolConfig
+            connectionPool.blockWaitTime = Duration.ofMillis(1000)
+            connectionPool.validator = searchValidator
+            connectionPool.pruneStrategy = pruneStrategy
+            connectionPool.connectionFactory = connectionFactory
             connectionPool.initialize()
 
             val pooledConnectionFactory = PooledConnectionFactory()
-            pooledConnectionFactory.setConnectionPool(connectionPool)
+            pooledConnectionFactory.connectionPool = connectionPool
 
             val handler = PooledBindAuthenticationHandler()
-            handler.setConnectionFactory(pooledConnectionFactory)
+            handler.connectionFactory = pooledConnectionFactory
 
             val ldaptiveAuthenticator = Authenticator()
-            ldaptiveAuthenticator.setDnResolver(dnResolver)
-            ldaptiveAuthenticator.setAuthenticationHandler(handler)
+            ldaptiveAuthenticator.dnResolver = dnResolver
+            ldaptiveAuthenticator.authenticationHandler = handler
 
             val ldapProfileService = LdapProfileService()
             ldapProfileService.ldapAuthenticator = ldaptiveAuthenticator
